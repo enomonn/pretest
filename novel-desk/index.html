@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>小説の作業机</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip-link" href="#mainContent">本文へ移動</a>
+<aside class="sidebar" aria-label="メインメニュー">
+  <div class="brand"><span class="brand-mark" aria-hidden="true">文</span><span>小説の作業机</span></div>
+  <nav class="main-nav"><button id="navWorks" class="nav-item active"><span class="nav-icon" aria-hidden="true">▤</span>小説</button></nav>
+  <div class="sidebar-bottom">
+    <details class="backup-menu">
+      <summary><span aria-hidden="true">↧</span> データのバックアップ</summary>
+      <button id="exportData" class="backup-action">ファイルに保存</button>
+      <label class="backup-action import-label" for="importData">ファイルから読み込む<input id="importData" type="file" accept=".json,application/json"></label>
+    </details>
+    <p class="local-note">原稿はこのブラウザに保存されます</p>
+  </div>
+</aside>
+<div class="app-shell">
+  <header class="topbar">
+    <span class="workspace-name">執筆ワークスペース</span>
+    <div class="topbar-right"><span id="storage" role="status" aria-live="polite"></span><span id="mode" class="mode-label">AI体験モード</span></div>
+  </header>
+  <main id="mainContent">
+    <section id="dashboard" class="page dashboard">
+      <div class="page-heading"><div class="heading-group"><h1>小説</h1><span id="worksCount" class="count-badge">0</span></div><button id="newWork" class="button primary"><span aria-hidden="true">＋</span> 新しい小説を作成</button></div>
+      <div class="list-toolbar">
+        <div class="filter-controls">
+          <label class="sr-only" for="filterWorks">執筆状態で絞り込み</label>
+          <select id="filterWorks"><option value="all">すべての小説</option><option value="writing">執筆中</option><option value="complete">完結</option></select>
+          <label class="sr-only" for="sortWorks">並べ替え</label>
+          <select id="sortWorks"><option value="updated">更新日が新しい順</option><option value="title">タイトル順</option></select>
+        </div>
+        <div class="search-field"><span aria-hidden="true">⌕</span><label class="sr-only" for="searchWorks">小説を検索</label><input id="searchWorks" type="search" placeholder="タイトルで検索" autocomplete="off"></div>
+      </div>
+      <div id="worksList" class="works-list"></div>
+      <div id="emptyWorks" class="empty-state" hidden><h2>条件に合う小説がありません</h2><p>検索条件を変えるか、新しい小説を作成してください。</p></div>
+    </section>
+
+    <section id="workView" class="page work-page" hidden>
+      <button id="backToWorks" class="back-link">‹ 小説一覧</button>
+      <div class="work-heading">
+        <div class="work-heading-content"><h1 id="workHeading"></h1><p id="workMeta" class="work-subtitle"></p></div>
+        <button id="editWork" class="button">作品情報を編集</button>
+      </div>
+      <div class="section-tabs" role="tablist" aria-label="作品の管理">
+        <button id="episodesTab" role="tab" aria-selected="true" aria-controls="episodesPanel">エピソード</button>
+        <button id="notesTab" role="tab" aria-selected="false" aria-controls="notesPanel">作品ノート・メモ</button>
+      </div>
+      <div id="episodesPanel" role="tabpanel" aria-labelledby="episodesTab">
+        <div class="section-toolbar"><h2>エピソード一覧</h2><button id="newChapter" class="button primary">＋ 新しいエピソード</button></div>
+        <div id="episodeList" class="episode-list"></div>
+      </div>
+      <div id="notesPanel" role="tabpanel" aria-labelledby="notesTab" hidden>
+        <div class="notes-grid">
+          <div class="note-editor"><label for="canon" class="section-label">作品ノート</label><p class="field-help">確定した設定、過去のあらすじ、伏線をまとめます。AIへの相談時に参照されます。</p><textarea id="canon" placeholder="登場人物、世界観、あとで拾いたい描写など"></textarea></div>
+          <div class="saved-memos"><h2>採用候補のメモ</h2><p class="field-help">相談で残した案や見本を、ここで読み返せます。</p><div id="memoList"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="editorView" class="editor-page" hidden>
+      <div class="editor-navigation"><button id="backToWork" class="back-link">‹ エピソード一覧</button><span id="editorWorkTitle"></span></div>
+      <div class="editor-actions">
+        <div class="editor-state"><span id="stage" class="status-pill writing">執筆中</span><span id="wordCount">0文字</span></div>
+        <div class="editor-buttons"><button id="preview" class="button">プレビュー</button><button id="toggleAssistant" class="button assistant-toggle" aria-expanded="true" aria-controls="assistantPanel">AI相談を閉じる</button><button id="finish" class="button primary">完成にする</button></div>
+      </div>
+      <div id="editorLayout" class="editor-layout">
+        <div class="manuscript-panel">
+          <label for="chapterTitle" class="sr-only">エピソードのタイトル</label>
+          <input id="chapterTitle" maxlength="120" placeholder="エピソードのタイトル" autocomplete="off">
+          <div class="paper-rule"></div>
+          <label for="manuscript" class="sr-only">本文</label>
+          <textarea id="manuscript" placeholder="ここから物語を書き始めましょう。" spellcheck="false"></textarea>
+        </div>
+        <aside id="assistantPanel" class="assistant-panel" aria-label="執筆アシスタント">
+          <div class="assistant-heading"><span class="assistant-mark" aria-hidden="true">✧</span><div><h2>執筆アシスタント</h2><span>次の展開を、一緒に考える</span></div></div>
+          <div class="assistant-intro"><p id="hint">体験モードでは、サンプル小説「雨が止むまで」の固定回答で操作を試せます。</p><button id="example" class="suggestion-button">相談例を入れる <span aria-hidden="true">↗</span></button></div>
+          <div id="history" class="chat-history" role="log" aria-label="相談履歴"></div>
+          <form id="form" class="chat-composer">
+            <label class="sr-only" for="question">相談内容</label>
+            <textarea id="question" maxlength="3000" placeholder="次の展開で迷っていることは？" required></textarea>
+            <div class="composer-bottom"><span>案を比べて、見本も頼めます</span><button id="send" class="button primary" type="submit">相談する <span aria-hidden="true">↑</span></button></div>
+          </form>
+          <p id="progress" class="progress-message" role="status"></p>
+        </aside>
+      </div>
+    </section>
+  </main>
+</div>
+
+<dialog id="workDialog" class="work-dialog">
+  <form id="workForm">
+    <div class="dialog-heading"><h2 id="workDialogTitle">新しい小説</h2><button id="cancelWork" type="button" class="close-button" aria-label="閉じる">×</button></div>
+    <label for="workTitle">タイトル <span class="required-label">必須</span></label><input id="workTitle" required maxlength="120" placeholder="小説のタイトル" autocomplete="off">
+    <label for="workDescription">紹介文</label><textarea id="workDescription" maxlength="3000" placeholder="どんな物語か、短く書き留めましょう。"></textarea>
+    <div class="form-columns"><div><label for="workGenre">ジャンル</label><select id="workGenre"><option value="未設定">未設定</option><option>現代ドラマ</option><option>恋愛</option><option>ファンタジー</option><option>SF</option><option>ミステリー</option><option>ホラー</option><option>歴史・時代</option><option>エッセイ</option><option>その他</option></select></div><div><label for="workStatus">執筆状態</label><select id="workStatus"><option value="writing">執筆中</option><option value="complete">完結</option></select></div></div>
+    <div class="dialog-footer"><button id="submitWork" class="button primary" type="submit">作成する</button></div>
+  </form>
+</dialog>
+<dialog id="consent" class="consent-dialog">
+  <form method="dialog">
+    <h2>今回の送信内容</h2><p id="transmission"></p>
+    <p class="field-help">Google Gemini の無料枠では、送った内容がサービスの改善に使われる場合があります。</p>
+    <div class="dialog-footer"><button class="button" value="cancel">戻る</button><button class="button primary" value="send">この内容を送る</button></div>
+  </form>
+</dialog>
+<dialog id="previewDialog" class="preview-dialog">
+  <div class="preview-toolbar"><span>読書プレビュー</span><button id="closePreview" class="close-button" aria-label="プレビューを閉じる">×</button></div>
+  <article class="reading-page"><h2 id="previewTitle"></h2><div id="previewBody"></div></article>
+</dialog>
+<script src="desk.js"></script>
+</body>
+</html>
+
