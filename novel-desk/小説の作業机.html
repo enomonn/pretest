@@ -1,0 +1,848 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>小説の作業机</title>
+<style>:root {
+  color-scheme: light;
+  --ink: #252b33;
+  --muted: #7a828c;
+  --line: #e2e5e9;
+  --soft: #f7f8fa;
+  --blue: #1689c7;
+  --blue-dark: #1175ad;
+  --blue-wash: #edf7fc;
+  --rail-width: 208px;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: white;
+  color: var(--ink);
+  font: 14px/1.75 "Yu Gothic UI", "Meiryo", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, textarea, select { font: inherit; color: inherit; }
+button, a, summary, select { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+button:disabled { cursor: default; opacity: .5; }
+button { border: 0; background: transparent; }
+input, textarea, select { border: 1px solid #dce1e6; border-radius: 4px; background: white; }
+input, textarea { padding: 10px 12px; width: 100%; }
+textarea { resize: vertical; }
+input:focus, textarea:focus, select:focus { outline: 2px solid #c1e3f5; outline-offset: 1px; border-color: #8ec7e4; }
+button:focus-visible, summary:focus-visible, a:focus-visible, label.import-label:focus-within { outline: 2px solid var(--blue); outline-offset: 3px; }
+h1, h2, h3, p { margin: 0; }
+h1 { font-size: 25px; line-height: 1.5; font-weight: 700; letter-spacing: .025em; }
+h2 { font-size: 16px; font-weight: 650; }
+h3 { font-size: 14px; }
+button, a { transition: color .12s, background .12s, border-color .12s; }
+.sr-only, .skip-link:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+}
+.skip-link:focus { position: fixed; top: 0; left: 220px; z-index: 100; background: white; padding: 10px; }
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: var(--rail-width);
+  background: #f4f3f1;
+  border-right: 1px solid #eeedeb;
+  padding: 29px 0 24px;
+  display: flex;
+  flex-direction: column;
+  z-index: 20;
+}
+.brand { padding: 0 25px; display: flex; align-items: center; gap: 10px; font-weight: 650; font-size: 15px; letter-spacing: .025em; white-space: nowrap; }
+.brand-mark { display: grid; place-items: center; width: 31px; height: 32px; flex: none; background: var(--blue); border-radius: 2px; color: white; font: 20px/1.1 "Yu Mincho", serif; }
+.main-nav { padding-top: 40px; }
+.nav-item { position: relative; width: 100%; padding: 12px 27px; display: flex; align-items: center; gap: 12px; text-align: left; font-size: 14px; }
+.nav-item:hover { background: #ecebea; }
+.nav-item.active { font-weight: 700; }
+.nav-item.active::before { content: ""; width: 3px; height: 22px; position: absolute; left: 0; top: 50%; transform: translateY(-50%); background: #343b41; }
+.nav-icon { font-size: 20px; line-height: 1; color: #69727a; }
+.sidebar-bottom { margin-top: auto; padding: 20px 20px 0 25px; }
+.backup-menu { font-size: 11px; }
+.backup-menu summary { cursor: pointer; color: #676e75; }
+.backup-menu summary::marker { font-size: 9px; }
+.backup-action { display: block; padding: 9px 0 0 12px; color: #516d81; font-size: 11px; cursor: pointer; }
+.backup-action:hover { text-decoration: underline; }
+.import-label { position: relative; }
+.import-label input { position: absolute; inset: 0; width: 100%; opacity: 0; cursor: pointer; }
+.local-note { color: #92979c; font-size: 10px; line-height: 1.8; margin-top: 13px; }
+.app-shell { margin-left: var(--rail-width); }
+.topbar { height: 69px; padding: 0 38px; display: flex; justify-content: space-between; align-items: center; gap: 20px; border-bottom: 1px solid #f1f2f4; }
+.workspace-name { font-size: 12px; color: #757d86; }
+.topbar-right { display: flex; align-items: center; gap: 22px; font-size: 11px; color: #7d858d; }
+#storage { max-width: 350px; }
+.mode-label { white-space: nowrap; color: #6f7983; background: #f3f5f7; padding: 3px 9px; border-radius: 3px; }
+.page { max-width: 1100px; margin: 0 auto; padding: 44px 42px 100px; }
+.page-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 25px; }
+.heading-group { display: flex; align-items: baseline; gap: 10px; }
+.count-badge { font-size: 17px; color: #8b929a; }
+.button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 8px 15px; border: 1px solid #d7dce2; border-radius: 4px; background: white; color: #535e68; font-size: 12px; font-weight: 500; line-height: 1.65; white-space: nowrap; text-decoration: none; }
+.button:hover { background: #f6f9fc; border-color: #aebdca; color: #2f5e7b; }
+.button.primary { color: white; border-color: var(--blue); background: var(--blue); font-weight: 600; }
+.button.primary:hover { background: var(--blue-dark); border-color: var(--blue-dark); }
+.button.quiet, button.quiet { border-color: transparent; color: #617c90; background: transparent; }
+.button.quiet:hover, button.quiet:hover { background: var(--blue-wash); color: var(--blue-dark); }
+.button.small, button.small { padding: 5px 9px; font-size: 11px; }
+.list-toolbar { display: flex; align-items: center; gap: 18px; justify-content: space-between; padding-bottom: 15px; border-bottom: 1px solid #cfd5db; }
+.filter-controls { display: flex; gap: 8px; align-items: center; }
+.filter-controls select { font-size: 12px; padding: 6px 20px 6px 0; border-color: transparent; cursor: pointer; }
+.filter-controls select:hover { color: var(--blue); }
+.search-field { display: flex; gap: 7px; align-items: center; padding: 4px 10px; max-width: 215px; border: 1px solid #e2e6eb; border-radius: 4px; color: #84919c; background: white; }
+.search-field span { font-size: 20px; line-height: 1; }
+.search-field input { border: 0; padding: 3px 0; min-width: 0; background: transparent; font-size: 12px; }
+.search-field:focus-within { border-color: #8ec7e4; }
+.search-field input:focus { outline: 0; }
+.works-list { width: 100%; }
+.work-row { display: grid; grid-template-columns: 74px minmax(0,1fr) auto; gap: 24px; align-items: center; min-height: 117px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+.work-state { align-self: center; display: flex; align-items: center; flex-direction: column; gap: 7px; font-size: 11px; color: #828b94; }
+.status-pill { display: inline-flex; align-items: center; justify-content: center; border-radius: 2px; padding: 2px 9px; min-width: 57px; font-size: 11px; line-height: 1.6; white-space: nowrap; font-weight: 500; background: #f0f2f5; color: #687782; }
+.status-pill.writing { background: #f6ead3; color: #8b6c34; }
+.status-pill.complete { background: #e9f2ef; color: #4e7c68; }
+.work-info, .episode-info { min-width: 0; }
+.work-title { font-size: 17px; font-weight: 650; line-height: 1.6; text-align: left; color: #292e35; padding: 0; border: 0; background: transparent; overflow-wrap: anywhere; text-decoration: none; }
+.work-title:hover { color: var(--blue); text-decoration: underline; text-underline-offset: 4px; }
+.work-description { color: #7d858e; font-size: 12px; margin-top: 6px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.work-meta { display: flex; flex-wrap: wrap; gap: 6px 15px; color: #9299a0; font-size: 11px; margin-top: 7px; }
+.work-actions { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 6px; max-width: 180px; }
+.empty-state { padding: 80px 24px; text-align: center; color: #89919b; border-bottom: 1px solid var(--line); }
+.empty-state h2 { color: #606c77; font-size: 16px; margin-bottom: 9px; }
+.empty-state p { font-size: 12px; }
+.back-link { padding: 0; font-size: 12px; color: #7b8792; background: transparent; }
+.back-link:hover { color: var(--blue); }
+.work-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin: 24px 0 30px; }
+.work-heading-content { min-width: 0; }
+.work-heading h1 { overflow-wrap: anywhere; }
+.work-subtitle { color: #84909b; font-size: 12px; margin-top: 9px; white-space: pre-wrap; }
+.section-tabs { border-bottom: 1px solid var(--line); display: flex; gap: 30px; margin-bottom: 30px; }
+.section-tabs button { padding: 12px 3px; font-size: 13px; color: #818b95; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.section-tabs button[aria-selected=true] { color: #265f83; border-bottom-color: var(--blue); font-weight: 650; }
+.section-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 18px; }
+.section-toolbar h2 { font-size: 14px; font-weight: 600; }
+.episode-list { border-top: 1px solid #d9dee4; }
+.episode-row { display: grid; grid-template-columns: 35px minmax(0,1fr) auto; align-items: center; gap: 18px; padding: 20px 3px; border-bottom: 1px solid var(--line); }
+.episode-number { color: #9aa1aa; text-align: center; font-size: 12px; }
+.episode-title { text-align: left; padding: 0; color: #313e4a; font-weight: 600; font-size: 14px; overflow-wrap: anywhere; text-decoration: none; }
+.episode-title:hover { color: var(--blue); }
+.episode-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; font-size: 11px; color: #9199a1; margin-top: 6px; }
+.episode-actions { display: flex; align-items: center; gap: 8px; }
+.notes-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 35px; }
+.section-label { display: block; font-size: 15px; font-weight: 650; margin-bottom: 8px; }
+.field-help { color: #7c8791; font-size: 12px; line-height: 1.8; margin: 8px 0 18px; }
+#canon { min-height: 350px; line-height: 2; padding: 18px; }
+.saved-memos h2 { font-size: 15px; }
+.memo { border: 1px solid #e2e7ec; border-left: 3px solid #bbd9eb; border-radius: 4px; padding: 17px; font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; margin-bottom: 14px; background: #fcfdfe; }
+#memoList:empty::after { content: "まだメモはありません。"; color: #929ba4; font-size: 13px; display: block; padding: 30px 0; }
+.editor-page { max-width: 1500px; margin: 0 auto; padding: 23px 32px 65px; }
+.editor-navigation { display: flex; align-items: center; gap: 20px; font-size: 12px; color: #9aa1a8; margin-bottom: 20px; }
+#editorWorkTitle { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.editor-actions { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding-bottom: 17px; }
+.editor-state, .editor-buttons { display: flex; align-items: center; gap: 12px; }
+#wordCount { color: #8c969f; font-size: 11px; white-space: nowrap; }
+.editor-buttons { gap: 8px; }
+.editor-layout { display: grid; grid-template-columns: minmax(0,1fr) 340px; gap: 24px; align-items: start; }
+.editor-layout.assistant-hidden, .editor-layout:has(#assistantPanel[hidden]) { grid-template-columns: minmax(0,1fr); max-width: 1000px; margin: 0 auto; }
+.manuscript-panel { border: 1px solid #dfe4e9; background: white; border-radius: 5px; min-width: 0; padding: 45px clamp(25px,3.5vw,65px) 55px; box-shadow: 0 3px 10px #20344b03; }
+#chapterTitle { border: 0; font-size: 23px; font-weight: 650; border-radius: 0; padding: 0 0 12px; line-height: 1.8; }
+.paper-rule { height: 1px; background: #eef0f3; margin: 4px 0 26px; }
+#manuscript { border: 0; border-radius: 0; min-height: 570px; padding: 0; font: 17px/2.2 "Yu Mincho", "Hiragino Mincho ProN", Meiryo, serif; letter-spacing: .035em; resize: vertical; }
+#manuscript:focus, #chapterTitle:focus { outline: none; }
+#manuscript:focus-visible { box-shadow: -3px 0 0 -1px #deedf6; }
+.assistant-panel { background: #f8fafc; border: 1px solid #e0e7ee; border-radius: 5px; min-width: 0; position: sticky; top: 20px; overflow: hidden; }
+.assistant-heading { padding: 18px 19px; display: flex; gap: 12px; align-items: center; border-bottom: 1px solid #e5ebf1; }
+.assistant-mark { color: var(--blue); font-size: 27px; line-height: 1; }
+.assistant-heading h2 { font-size: 14px; }
+.assistant-heading div>span { color: #8b97a3; font-size: 10px; }
+.assistant-intro { padding: 18px 19px 5px; }
+#hint { color: #7b8794; font-size: 11px; line-height: 1.9; }
+.suggestion-button { text-align: left; display: flex; align-items: center; justify-content: space-between; border: 1px solid #dfe7ef; padding: 9px 12px; background: white; color: #5a7690; font-size: 11px; border-radius: 4px; width: 100%; margin-top: 12px; }
+.suggestion-button:hover { border-color: #9fc7e0; }
+.chat-history { max-height: 480px; overflow-y: auto; padding: 0 16px; }
+.chat-history:empty { display: none; }
+.message { font-size: 12px; line-height: 1.9; margin: 18px 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.message h3 { font-size: 10px; color: #84919e; margin-bottom: 7px; font-weight: 500; }
+.message.user { margin-left: 20px; padding: 12px; border-radius: 8px 8px 0 8px; background: #e9f0f6; }
+.message.assistant p { background: white; padding: 13px; border: 1px solid #e1e7ee; border-bottom: 0; border-radius: 4px 4px 0 0; }
+.message.assistant .row { padding: 0 10px 12px; background: white; border: 1px solid #e1e7ee; border-top: 0; border-radius: 0 0 4px 4px; margin-bottom: 13px; display: flex; flex-wrap: wrap; gap: 5px; }
+.message button { border: 1px solid #dde5ed; background: #fafcfe; color: #577895; border-radius: 4px; font-size: 10px; padding: 5px 7px; }
+.message button:hover { background: #eaf4fb; }
+.chat-composer { padding: 18px 16px 12px; }
+#question { min-height: 105px; font-size: 12px; padding: 12px; border-color: #d8e1eb; line-height: 1.9; }
+.composer-bottom { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 10px; }
+.composer-bottom>span { font-size: 9px; color: #909ba6; }
+.composer-bottom .button { padding: 7px 11px; font-size: 11px; }
+.progress-message { font-size: 11px; color: #687a8b; padding: 0 16px 12px; overflow-wrap: anywhere; }
+.progress-message:empty { padding-bottom: 0; }
+dialog { width: min(560px,92vw); max-height: 90vh; border: 1px solid #e2e6ec; padding: 30px; border-radius: 8px; background: white; color: var(--ink); box-shadow: 0 18px 80px #16263824; }
+dialog::backdrop { background: #1c2e4655; backdrop-filter: blur(2px); }
+.dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 24px; }
+.dialog-heading h2 { font-size: 19px; }
+.close-button { font-size: 25px; color: #7c8997; line-height: 1; padding: 3px 8px; }
+.close-button:hover { background: #f1f5f9; }
+.work-dialog label { display: block; font-size: 12px; font-weight: 600; margin: 18px 0 6px; }
+.required-label { font-size: 10px; font-weight: 400; color: #a08462; margin-left: 5px; }
+.work-dialog textarea { min-height: 110px; font-size: 13px; }
+.form-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.form-columns select { width: 100%; padding: 10px; font-size: 13px; }
+.dialog-footer { margin-top: 28px; display: flex; justify-content: flex-end; gap: 10px; }
+#transmission { font-size: 13px; margin-top: 18px; line-height: 2; }
+.preview-dialog { width: min(820px,94vw); padding: 0; }
+.preview-toolbar { display: flex; justify-content: space-between; align-items: center; padding: 16px 22px; border-bottom: 1px solid var(--line); color: #83909c; font-size: 11px; }
+.reading-page { padding: 55px 65px 80px; }
+#previewTitle { font: 600 24px/1.8 "Yu Mincho", serif; margin-bottom: 34px; overflow-wrap: anywhere; }
+#previewBody { white-space: pre-wrap; overflow-wrap: anywhere; font: 17px/2.3 "Yu Mincho", "Hiragino Mincho ProN", Meiryo, serif; }
+@media(min-width:1600px) {
+  .page { padding-top: 58px; max-width: 1200px; }
+  .editor-page { padding-top: 30px; }
+}
+@media(max-width:1190px) {
+  :root { --rail-width: 180px; }
+  .brand { padding: 0 19px; gap: 8px; font-size: 13px; }
+  .brand-mark { width: 28px; height: 30px; }
+  .page { padding: 35px 32px 80px; }
+  .topbar { padding: 0 27px; }
+  .editor-page { padding: 22px 22px 60px; }
+  .editor-layout { grid-template-columns: minmax(0,1fr) 290px; gap: 17px; }
+  .manuscript-panel { padding: 32px 30px; }
+  .work-row { gap: 16px; }
+  .work-actions { max-width: 130px; }
+}
+@media(max-width:930px) {
+  :root { --rail-width: 160px; }
+  .brand { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .nav-item { padding-left: 20px; }
+  .sidebar-bottom { padding-left: 17px; padding-right: 12px; }
+  .backup-menu { font-size: 10px; }
+  .editor-layout { grid-template-columns: 1fr; }
+  .assistant-panel { position: static; }
+  .chat-history { max-height: 420px; }
+  .work-row { grid-template-columns: 65px minmax(0,1fr); padding: 20px 0; }
+  .work-actions { grid-column: 2; max-width: none; justify-content: flex-start; }
+  .work-state { grid-row: 1/3; align-self: start; padding-top: 4px; }
+  .work-info { grid-column: 2; }
+  .notes-grid { grid-template-columns: 1fr; }
+  .workspace-name { display: none; }
+  .topbar { justify-content: flex-end; }
+  .topbar-right { gap: 10px; }
+  .editor-buttons { gap: 5px; }
+  .editor-buttons .button { padding: 7px 9px; font-size: 11px; }
+}
+@media(max-width:650px) {
+  :root { --rail-width: 0px; }
+  .sidebar { position: relative; width: 100%; height: auto; padding: 15px 18px 0; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; border-right: 0; border-bottom: 1px solid var(--line); background: #f7f6f4; }
+  .brand { flex-direction: row; align-items: center; padding: 0; font-size: 14px; }
+  .brand-mark { width: 26px; height: 28px; font-size: 18px; }
+  .main-nav { padding: 0; }
+  .nav-item { width: auto; padding: 10px 12px; font-size: 12px; }
+  .nav-icon { font-size: 16px; }
+  .nav-item.active::before { display: none; }
+  .sidebar-bottom { padding: 11px 0 12px; margin: 0; width: 100%; border-top: 1px solid #e8e7e4; margin-top: 12px; }
+  .local-note { display: none; }
+  .backup-menu { font-size: 10px; }
+  .backup-menu[open] { padding-bottom: 7px; }
+  .backup-action { padding-top: 10px; font-size: 12px; }
+  .topbar { height: 41px; padding: 0 18px; }
+  .topbar-right { width: 100%; justify-content: space-between; font-size: 10px; }
+  #storage { max-width: 60%; }
+  .mode-label { font-size: 9px; }
+  .page { padding: 27px 18px 60px; }
+  h1 { font-size: 23px; }
+  .page-heading { gap: 10px; margin-bottom: 22px; }
+  .page-heading .button { font-size: 11px; padding: 8px 10px; }
+  .heading-group { gap: 7px; }
+  .count-badge { font-size: 15px; }
+  .list-toolbar { flex-wrap: wrap; gap: 10px; }
+  .search-field { max-width: none; width: 100%; }
+  .filter-controls { width: 100%; justify-content: space-between; }
+  .filter-controls select { font-size: 11px; }
+  .work-row { grid-template-columns: 58px minmax(0,1fr); gap: 12px 15px; }
+  .work-title { font-size: 16px; }
+  .work-description { -webkit-line-clamp: 2; }
+  .work-meta { gap: 4px 10px; font-size: 10px; }
+  .work-actions .button { font-size: 10px; padding: 6px 10px; }
+  .work-heading { flex-wrap: wrap; gap: 15px; margin: 20px 0; }
+  .work-heading .button { font-size: 11px; }
+  .section-tabs { gap: 25px; margin-bottom: 23px; }
+  .section-tabs button { font-size: 12px; }
+  .section-toolbar h2 { font-size: 12px; }
+  .section-toolbar .button { font-size: 10px; padding: 7px 9px; }
+  .episode-row { grid-template-columns: 20px minmax(0,1fr); gap: 12px; }
+  .episode-number { grid-row: 1/3; align-self: start; padding-top: 2px; }
+  .episode-actions { grid-column: 2; }
+  .episode-meta { gap: 8px; }
+  .notes-grid { gap: 30px; }
+  .editor-page { padding: 17px 12px 40px; }
+  .editor-navigation { gap: 12px; padding: 0 4px; }
+  .editor-actions { flex-wrap: wrap; padding: 0 4px 15px; }
+  .editor-buttons { margin-left: auto; }
+  .editor-buttons .button { font-size: 10px; }
+  .manuscript-panel { padding: 28px 22px 35px; }
+  #chapterTitle { font-size: 21px; }
+  #manuscript { font-size: 16px; min-height: 400px; }
+  .paper-rule { margin-bottom: 20px; }
+  dialog { padding: 22px; }
+  .reading-page { padding: 35px 25px 55px; }
+  .preview-dialog { padding: 0; }
+  #previewTitle { font-size: 22px; }
+  #previewBody { font-size: 16px; }
+}
+
+/* Assistant responses use the same spacing as the work management screens. */
+.chat-empty {
+  padding: 26px 7px 18px;
+  color: #8794a0;
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.9;
+}
+.message.assistant .message-actions {
+  padding: 0 10px 12px;
+  background: white;
+  border: 1px solid #e1e7ee;
+  border-top: 0;
+  border-radius: 0 0 4px 4px;
+  margin-bottom: 13px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.episode-count { font-size: 11px; color: #929ba3; }
+#memoList > .empty-state {
+  padding: 30px 20px;
+  border: 1px dashed #dce3e9;
+  border-radius: 4px;
+  line-height: 1.9;
+  font-size: 12px;
+}
+.chat-empty { white-space: pre-line; }
+@media(prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  button, a { transition: none; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#mainContent">本文へ移動</a>
+<aside class="sidebar" aria-label="メインメニュー">
+  <div class="brand"><span class="brand-mark" aria-hidden="true">文</span><span>小説の作業机</span></div>
+  <nav class="main-nav"><button id="navWorks" class="nav-item active"><span class="nav-icon" aria-hidden="true">▤</span>小説</button></nav>
+  <div class="sidebar-bottom">
+    <details class="backup-menu">
+      <summary><span aria-hidden="true">↧</span> データのバックアップ</summary>
+      <button id="exportData" class="backup-action">ファイルに保存</button>
+      <label class="backup-action import-label" for="importData">ファイルから読み込む<input id="importData" type="file" accept=".json,application/json"></label>
+    </details>
+    <p class="local-note">原稿はこのブラウザに保存されます</p>
+  </div>
+</aside>
+<div class="app-shell">
+  <header class="topbar">
+    <span class="workspace-name">執筆ワークスペース</span>
+    <div class="topbar-right"><span id="storage" role="status" aria-live="polite"></span><span id="mode" class="mode-label">AI体験モード</span></div>
+  </header>
+  <main id="mainContent">
+    <section id="dashboard" class="page dashboard">
+      <div class="page-heading"><div class="heading-group"><h1>小説</h1><span id="worksCount" class="count-badge">0</span></div><button id="newWork" class="button primary"><span aria-hidden="true">＋</span> 新しい小説を作成</button></div>
+      <div class="list-toolbar">
+        <div class="filter-controls">
+          <label class="sr-only" for="filterWorks">執筆状態で絞り込み</label>
+          <select id="filterWorks"><option value="all">すべての小説</option><option value="writing">執筆中</option><option value="complete">完結</option></select>
+          <label class="sr-only" for="sortWorks">並べ替え</label>
+          <select id="sortWorks"><option value="updated">更新日が新しい順</option><option value="title">タイトル順</option></select>
+        </div>
+        <div class="search-field"><span aria-hidden="true">⌕</span><label class="sr-only" for="searchWorks">小説を検索</label><input id="searchWorks" type="search" placeholder="タイトルで検索" autocomplete="off"></div>
+      </div>
+      <div id="worksList" class="works-list"></div>
+      <div id="emptyWorks" class="empty-state" hidden><h2>条件に合う小説がありません</h2><p>検索条件を変えるか、新しい小説を作成してください。</p></div>
+    </section>
+
+    <section id="workView" class="page work-page" hidden>
+      <button id="backToWorks" class="back-link">‹ 小説一覧</button>
+      <div class="work-heading">
+        <div class="work-heading-content"><h1 id="workHeading"></h1><p id="workMeta" class="work-subtitle"></p></div>
+        <button id="editWork" class="button">作品情報を編集</button>
+      </div>
+      <div class="section-tabs" role="tablist" aria-label="作品の管理">
+        <button id="episodesTab" role="tab" aria-selected="true" aria-controls="episodesPanel">エピソード</button>
+        <button id="notesTab" role="tab" aria-selected="false" aria-controls="notesPanel">作品ノート・メモ</button>
+      </div>
+      <div id="episodesPanel" role="tabpanel" aria-labelledby="episodesTab">
+        <div class="section-toolbar"><h2>エピソード一覧</h2><button id="newChapter" class="button primary">＋ 新しいエピソード</button></div>
+        <div id="episodeList" class="episode-list"></div>
+      </div>
+      <div id="notesPanel" role="tabpanel" aria-labelledby="notesTab" hidden>
+        <div class="notes-grid">
+          <div class="note-editor"><label for="canon" class="section-label">作品ノート</label><p class="field-help">確定した設定、過去のあらすじ、伏線をまとめます。AIへの相談時に参照されます。</p><textarea id="canon" placeholder="登場人物、世界観、あとで拾いたい描写など"></textarea></div>
+          <div class="saved-memos"><h2>採用候補のメモ</h2><p class="field-help">相談で残した案や見本を、ここで読み返せます。</p><div id="memoList"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="editorView" class="editor-page" hidden>
+      <div class="editor-navigation"><button id="backToWork" class="back-link">‹ エピソード一覧</button><span id="editorWorkTitle"></span></div>
+      <div class="editor-actions">
+        <div class="editor-state"><span id="stage" class="status-pill writing">執筆中</span><span id="wordCount">0文字</span></div>
+        <div class="editor-buttons"><button id="preview" class="button">プレビュー</button><button id="toggleAssistant" class="button assistant-toggle" aria-expanded="true" aria-controls="assistantPanel">AI相談を閉じる</button><button id="finish" class="button primary">完成にする</button></div>
+      </div>
+      <div id="editorLayout" class="editor-layout">
+        <div class="manuscript-panel">
+          <label for="chapterTitle" class="sr-only">エピソードのタイトル</label>
+          <input id="chapterTitle" maxlength="120" placeholder="エピソードのタイトル" autocomplete="off">
+          <div class="paper-rule"></div>
+          <label for="manuscript" class="sr-only">本文</label>
+          <textarea id="manuscript" placeholder="ここから物語を書き始めましょう。" spellcheck="false"></textarea>
+        </div>
+        <aside id="assistantPanel" class="assistant-panel" aria-label="執筆アシスタント">
+          <div class="assistant-heading"><span class="assistant-mark" aria-hidden="true">✧</span><div><h2>執筆アシスタント</h2><span>次の展開を、一緒に考える</span></div></div>
+          <div class="assistant-intro"><p id="hint">体験モードでは、サンプル小説「雨が止むまで」の固定回答で操作を試せます。</p><button id="example" class="suggestion-button">相談例を入れる <span aria-hidden="true">↗</span></button></div>
+          <div id="history" class="chat-history" role="log" aria-label="相談履歴"></div>
+          <form id="form" class="chat-composer">
+            <label class="sr-only" for="question">相談内容</label>
+            <textarea id="question" maxlength="3000" placeholder="次の展開で迷っていることは？" required></textarea>
+            <div class="composer-bottom"><span>案を比べて、見本も頼めます</span><button id="send" class="button primary" type="submit">相談する <span aria-hidden="true">↑</span></button></div>
+          </form>
+          <p id="progress" class="progress-message" role="status"></p>
+        </aside>
+      </div>
+    </section>
+  </main>
+</div>
+
+<dialog id="workDialog" class="work-dialog">
+  <form id="workForm">
+    <div class="dialog-heading"><h2 id="workDialogTitle">新しい小説</h2><button id="cancelWork" type="button" class="close-button" aria-label="閉じる">×</button></div>
+    <label for="workTitle">タイトル <span class="required-label">必須</span></label><input id="workTitle" required maxlength="120" placeholder="小説のタイトル" autocomplete="off">
+    <label for="workDescription">紹介文</label><textarea id="workDescription" maxlength="3000" placeholder="どんな物語か、短く書き留めましょう。"></textarea>
+    <div class="form-columns"><div><label for="workGenre">ジャンル</label><select id="workGenre"><option value="未設定">未設定</option><option>現代ドラマ</option><option>恋愛</option><option>ファンタジー</option><option>SF</option><option>ミステリー</option><option>ホラー</option><option>歴史・時代</option><option>エッセイ</option><option>その他</option></select></div><div><label for="workStatus">執筆状態</label><select id="workStatus"><option value="writing">執筆中</option><option value="complete">完結</option></select></div></div>
+    <div class="dialog-footer"><button id="submitWork" class="button primary" type="submit">作成する</button></div>
+  </form>
+</dialog>
+<dialog id="consent" class="consent-dialog">
+  <form method="dialog">
+    <h2>今回の送信内容</h2><p id="transmission"></p>
+    <p class="field-help">Google Gemini の無料枠では、送った内容がサービスの改善に使われる場合があります。</p>
+    <div class="dialog-footer"><button class="button" value="cancel">戻る</button><button class="button primary" value="send">この内容を送る</button></div>
+  </form>
+</dialog>
+<dialog id="previewDialog" class="preview-dialog">
+  <div class="preview-toolbar"><span>読書プレビュー</span><button id="closePreview" class="close-button" aria-label="プレビューを閉じる">×</button></div>
+  <article class="reading-page"><h2 id="previewTitle"></h2><div id="previewBody"></div></article>
+</dialog>
+<script>const $ = id => document.getElementById(id);
+const STORAGE_KEY = 'novel-desk-v2';
+const LEGACY_KEY = 'novel-desk-v1';
+const exampleQuestion = '澪が手紙を隠していた理由を明かしたいけど、今だと唐突。どうつなげればいい？';
+const uid = () => crypto.randomUUID();
+const dateLabel = value => value ? new Date(value).toLocaleString('ja-JP', {month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '更新日時なし';
+const chars = body => Array.from(body.replace(/\s/g, '')).length;
+const seed = {
+  title:'雨が止むまで', description:'一通の手紙が、幼なじみの間に隠された秘密をほどいていく。', genre:'現代ドラマ',
+  canon:'澪と蓮は幼なじみ。蓮は差出人のいない手紙を探している。\n前話で蓮は、澪が使う青いインクの染みを手紙の封に見つけた。\n伏線：澪は蓮が雨の中で駅を出た夜のことを、まだ話していない。',
+  notes:[],
+  chapters:[{title:'窓辺の手紙',body:'雨音に紛れて、蓮はもう一度たずねた。\n「手紙、ここに届かなかった？」\n澪は窓辺の引き出しに手を置いた。\n「……どうして、うちにあると思うの？」\n蓮は答えず、古い封筒の青い染みを指でなぞった。', complete:false,messages:[]}]
+};
+let loadError = '';
+let storageBlocked = false;
+let revision = null;
+
+function normalizeWork(input) {
+  if (!input || typeof input.title !== 'string' || typeof input.canon !== 'string' ||
+      !Array.isArray(input.notes) || !input.notes.every(note => typeof note === 'string') ||
+      !Array.isArray(input.chapters)) throw Error('作品データの形式を確認してください。');
+  return {
+    id: typeof input.id === 'string' ? input.id : uid(),
+    title:input.title, description:typeof input.description === 'string' ? input.description : '',
+    genre:typeof input.genre === 'string' ? input.genre : '未設定',
+    status:input.status === 'complete' ? 'complete' : 'writing',
+    updatedAt:Number.isFinite(input.updatedAt) ? input.updatedAt : 0,
+    canon:input.canon, notes:[...input.notes],
+    chapters:input.chapters.map(chapter => {
+      if (!chapter || typeof chapter.title !== 'string' || typeof chapter.body !== 'string' ||
+          !Array.isArray(chapter.messages)) throw Error('エピソードの形式を確認してください。');
+      return {
+        id:typeof chapter.id === 'string' ? chapter.id : uid(),
+        title:chapter.title,body:chapter.body,complete:chapter.complete === true,
+        draftQuestion:typeof chapter.draftQuestion === 'string' ? chapter.draftQuestion : '',
+        updatedAt:Number.isFinite(chapter.updatedAt) ? chapter.updatedAt : 0,
+        messages:chapter.messages.map(message => {
+          if (!message || !['user','assistant'].includes(message.role) || !Array.isArray(message.blocks) ||
+              !message.blocks.every(block => typeof block === 'string')) throw Error('相談履歴の形式を確認してください。');
+          return {role:message.role,blocks:[...message.blocks],kind:message.kind === 'sample' ? 'sample' : 'ideas',demo:message.demo === true};
+        })
+      };
+    })
+  };
+}
+function load() {
+  try {
+    revision = localStorage.getItem(STORAGE_KEY);
+    if (revision) {
+      const saved = JSON.parse(revision);
+      if (saved.version !== 2 || !Array.isArray(saved.works)) throw Error();
+      return {version:2,works:saved.works.map(normalizeWork)};
+    }
+    const old = localStorage.getItem(LEGACY_KEY);
+    return {version:2,works:[normalizeWork(old ? JSON.parse(old) : seed)]};
+  } catch {
+    storageBlocked = true;
+    loadError = '保存データを読み込めません。元のデータを保護しています。バックアップを確認してください。';
+    return {version:2,works:[]};
+  }
+}
+let state = load();
+let activeWorkId = null;
+let activeChapterId = null;
+let view = 'dashboard';
+let editingWorkId = null;
+let connected = false;
+let busy = false;
+const work = () => state.works.find(item => item.id === activeWorkId);
+const chapter = () => work()?.chapters.find(item => item.id === activeChapterId);
+
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+function button(text, className, action) {
+  const node = el('button', className, text);
+  node.type = 'button';
+  node.onclick = action;
+  return node;
+}
+function save(changedWork, changedChapter) {
+  if (changedWork) changedWork.updatedAt = Date.now();
+  if (changedChapter) changedChapter.updatedAt = Date.now();
+  try {
+    if (storageBlocked || localStorage.getItem(STORAGE_KEY) !== revision) {
+      storageBlocked = true;
+      $('storage').textContent = '別の画面で変更されています。この画面の編集は「バックアップ」で保存してください。';
+      return false;
+    }
+    const next = JSON.stringify(state);
+    localStorage.setItem(STORAGE_KEY, next);
+    revision = next;
+    $('storage').textContent = '保存済み';
+    return true;
+  } catch {
+    $('storage').textContent = '保存できません。「バックアップ」で原稿を保存してください。';
+    return false;
+  }
+}
+window.addEventListener('storage', event => {
+  if (event.key === STORAGE_KEY && event.newValue !== revision) {
+    storageBlocked = true;
+    $('storage').textContent = '別の画面で変更があります。編集内容をバックアップしてから再読み込みしてください。';
+  }
+});
+function show(next) {
+  view = next;
+  for (const name of ['dashboard','workView','editorView']) $(name).hidden = name !== next;
+  $('navWorks').setAttribute('aria-current','page');
+  window.scrollTo(0,0);
+}
+function renderDashboard() {
+  const query = $('searchWorks').value.trim().toLocaleLowerCase();
+  const filter = $('filterWorks').value;
+  const works = state.works.filter(item =>
+    (item.title + ' ' + item.description).toLocaleLowerCase().includes(query) &&
+    (filter === 'all' || item.status === filter)
+  ).sort((a,b) => $('sortWorks').value === 'title' ? a.title.localeCompare(b.title,'ja') : b.updatedAt-a.updatedAt);
+  $('worksCount').textContent = state.works.length;
+  $('worksList').replaceChildren();
+  $('emptyWorks').hidden = works.length > 0;
+  $('emptyWorks').textContent = state.works.length ? '条件に一致する小説がありません。検索や絞り込みを変更してください。' : '最初の小説を作成して、執筆をはじめましょう。';
+  for (const item of works) {
+    const row = el('article','work-row');
+    const status = el('div','work-state');
+    status.append(el('span','status-pill ' + item.status,item.status === 'complete' ? '完結' : '執筆中'),
+      el('span','episode-count',item.chapters.length + '話'));
+    const info = el('div','work-info');
+    info.append(button(item.title || '無題の小説','work-title',()=>openWork(item.id)));
+    if (item.description) info.append(el('p','work-description',item.description));
+    info.append(el('div','work-meta',item.genre + '　·　' +
+      item.chapters.reduce((total,ep)=>total+chars(ep.body),0).toLocaleString()+'文字　·　'+
+      (item.updatedAt ? dateLabel(item.updatedAt)+' 更新' : 'このブラウザに保存')));
+    const actions = el('div','work-actions');
+    actions.append(button('続きを書く','button primary small',()=> {
+      activeWorkId = item.id;
+      if (!item.chapters.length) return addChapter();
+      openEditor(item.chapters.at(-1).id);
+    }),button('管理','button quiet small',()=>openWork(item.id)));
+    row.append(status,info,actions);
+    $('worksList').append(row);
+  }
+}
+function openDashboard() { renderDashboard(); show('dashboard'); }
+function openWork(id) {
+  activeWorkId = id;
+  activeChapterId = null;
+  renderWork();
+  setTab(false);
+  show('workView');
+}
+function renderWork() {
+  const item = work();
+  $('workHeading').textContent = item.title || '無題の小説';
+  $('workMeta').textContent = item.genre+'　/　'+ (item.status === 'complete'?'完結':'執筆中')+'　/　'+item.chapters.length+'話';
+  $('canon').value = item.canon;
+  $('episodeList').replaceChildren();
+  if (!item.chapters.length) $('episodeList').append(el('div','empty-state','エピソードがまだありません。「新しいエピソード」から書き始められます。'));
+  item.chapters.forEach((ep,index)=>{
+    const row=el('article','episode-row');
+    const info=el('div','episode-info');
+    info.append(button(ep.title || '無題のエピソード','episode-title',()=>openEditor(ep.id)));
+    info.append(el('div','episode-meta',chars(ep.body).toLocaleString()+'文字　·　'+
+      (ep.updatedAt?dateLabel(ep.updatedAt)+' 更新':'下書き')));
+    const actions=el('div','episode-actions');
+    actions.append(el('span','status-pill '+(ep.complete?'complete':'writing'),ep.complete?'完成':'執筆中'),
+      button('編集','button small',()=>openEditor(ep.id)));
+    row.append(el('span','episode-number',String(index+1).padStart(2,'0')),info,actions);
+    $('episodeList').append(row);
+  });
+  renderNotes();
+}
+function setTab(notes) {
+  $('episodesPanel').hidden=notes;
+  $('notesPanel').hidden=!notes;
+  $('episodesTab').setAttribute('aria-selected',String(!notes));
+  $('notesTab').setAttribute('aria-selected',String(notes));
+}
+function renderNotes() {
+  $('memoList').replaceChildren();
+  if (!work().notes.length) $('memoList').append(el('p','empty-state','相談で気に入った案を「メモに残す」と、ここに保存されます。'));
+  work().notes.forEach(note => $('memoList').append(el('div','memo',note)));
+}
+function openEditor(id) {
+  activeChapterId=id;
+  const ep=chapter();
+  $('editorWorkTitle').textContent=work().title || '無題の小説';
+  $('chapterTitle').value=ep.title;
+  $('manuscript').value=ep.body;
+  $('question').value=ep.draftQuestion;
+  $('progress').textContent='';
+  updateEditorStatus();
+  renderHistory();
+  show('editorView');
+}
+function updateEditorStatus() {
+  const ep=chapter();
+  $('wordCount').textContent=chars(ep.body).toLocaleString()+'文字';
+  $('stage').textContent=ep.complete?'完成':'執筆中';
+  $('stage').className='status-pill '+(ep.complete?'complete':'writing');
+  $('finish').textContent=ep.complete?'執筆中に戻す':'完成にする';
+}
+function addChapter() {
+  const ep={id:uid(),title:'',body:'',complete:false,messages:[],draftQuestion:'',updatedAt:Date.now()};
+  work().chapters.push(ep);
+  save(work());
+  openEditor(ep.id);
+  $('chapterTitle').focus();
+}
+function workDialog(editId=null) {
+  editingWorkId=editId;
+  const item=state.works.find(candidate=>candidate.id===editId);
+  $('workTitle').value=item?.title || '';
+  $('workDescription').value=item?.description || '';
+  $('workGenre').value=item?.genre || '未設定';
+  if (!$('workGenre').value) $('workGenre').value='未設定';
+  $('workStatus').value=item?.status || 'writing';
+  $('submitWork').textContent=item?'変更を保存':'小説を作成';
+  $('workDialogTitle').textContent=item?'作品情報を編集':'新しい小説';
+  $('workDialog').showModal();
+  $('workTitle').focus();
+}
+$('workForm').onsubmit=event=>{
+  event.preventDefault();
+  const title=$('workTitle').value.trim();
+  if(!title){$('workTitle').setCustomValidity('作品名を入力してください。');$('workTitle').reportValidity();return;}
+  let item=state.works.find(candidate=>candidate.id===editingWorkId);
+  if(!item) {
+    item=normalizeWork({title,canon:'',notes:[],chapters:[]});
+    state.works.push(item);
+  }
+  Object.assign(item,{title,description:$('workDescription').value.trim(),genre:$('workGenre').value,status:$('workStatus').value});
+  save(item);
+  $('workDialog').close();
+  openWork(item.id);
+};
+$('workTitle').oninput=()=> $('workTitle').setCustomValidity('');
+$('cancelWork').onclick=()=> $('workDialog').close();
+$('newWork').onclick=()=>workDialog();
+$('editWork').onclick=()=>workDialog(activeWorkId);
+$('navWorks').onclick=openDashboard;
+$('backToWorks').onclick=openDashboard;
+$('backToWork').onclick=()=>openWork(activeWorkId);
+$('newChapter').onclick=addChapter;
+$('episodesTab').onclick=()=>setTab(false);
+$('notesTab').onclick=()=>setTab(true);
+$('searchWorks').oninput=renderDashboard;
+$('filterWorks').onchange=renderDashboard;
+$('sortWorks').onchange=renderDashboard;
+$('canon').oninput=()=>{work().canon=$('canon').value;save(work());};
+$('chapterTitle').oninput=()=>{chapter().title=$('chapterTitle').value;save(work(),chapter());};
+$('manuscript').oninput=()=>{chapter().body=$('manuscript').value;save(work(),chapter());updateEditorStatus();};
+$('question').oninput=()=>{chapter().draftQuestion=$('question').value;save();};
+$('finish').onclick=()=>{chapter().complete=!chapter().complete;save(work(),chapter());updateEditorStatus();};
+$('preview').onclick=()=>{
+  $('previewTitle').textContent=chapter().title || '無題のエピソード';
+  $('previewBody').textContent=chapter().body || '本文がまだありません。';
+  $('previewDialog').showModal();
+};
+$('closePreview').onclick=()=> $('previewDialog').close();
+$('toggleAssistant').onclick=()=>{
+  $('assistantPanel').hidden=!$('assistantPanel').hidden;
+  $('toggleAssistant').setAttribute('aria-expanded',String(!$('assistantPanel').hidden));
+  $('toggleAssistant').textContent=$('assistantPanel').hidden?'AI相談を開く':'AI相談を閉じる';
+};
+function renderHistory() {
+  const log=$('history');
+  const item=work();
+  log.replaceChildren();
+  if(!chapter().messages.length) log.append(el('div','chat-empty','次の一場面から、一緒に。\n迷っている展開を相談してみましょう。'));
+  chapter().messages.forEach(message=>{
+    const entry=el('article','message '+message.role);
+    entry.append(el('h3','',message.role==='user'?'あなた':message.demo?'サンプル回答':'執筆アシスタント'));
+    message.blocks.forEach(block=>{
+      const card=el('div','suggestion');
+      card.append(el('p','',block));
+      if(message.role==='assistant') {
+        const actions=el('div','message-actions');
+        const remember=button(item.notes.includes(block)?'保存済み':'メモに残す','button quiet small',()=>{
+          if(!item.notes.includes(block))item.notes.push(block);
+          save(item);remember.disabled=true;remember.textContent='保存済み';
+        });
+        remember.disabled=item.notes.includes(block);
+        actions.append(remember);
+        if(message.kind==='ideas')actions.append(button('この案の見本を頼む','button small',()=>{
+          chapter().draftQuestion='この案で、会話を3往復ほど、短い地の文つきで見せて。\n\n'+block;
+          $('question').value=chapter().draftQuestion;
+          save();$('question').focus();
+        }));
+        card.append(actions);
+      }
+      entry.append(card);
+    });
+    log.append(entry);
+  });
+  log.scrollTop=log.scrollHeight;
+}
+$('example').onclick=()=>{
+  chapter().draftQuestion=exampleQuestion;
+  $('question').value=exampleQuestion;
+  save();$('question').focus();
+};
+function confirmSend(context) {
+  const dialog=$('consent');
+  $('transmission').textContent='相談文、作品名、この話のタイトルと本文（'+context.body.length+'字）、作品ノート（'+context.canon.length+'字）、直近の相談履歴（'+context.recent.length+'件）を Google Gemini に送ります。';
+  dialog.returnValue='cancel';
+  dialog.showModal();
+  return new Promise(resolve=>dialog.addEventListener('close',()=>resolve(dialog.returnValue==='send'),{once:true}));
+}
+$('form').onsubmit=async event=>{
+  event.preventDefault();
+  const question=$('question').value.trim();
+  if(!question || busy)return;
+  const item=work();
+  const ep=chapter();
+  const isSample=/見本|例文|会話を[0-9０-９一二三四五六七八九]/.test(question);
+  busy=true;
+  $('send').disabled=true;
+  let blocks;
+  try {
+    if(connected) {
+      const context={work:item.title,title:ep.title,body:ep.body,canon:item.canon,recent:structuredClone(ep.messages.slice(-6))};
+      if(!await confirmSend(context))return;
+      $('progress').textContent='相談中…';
+      const response=await fetch('/consult',{
+        method:'POST',headers:{'Content-Type':'application/json'},signal:AbortSignal.timeout(55_000),
+        body:JSON.stringify({question,context,kind:isSample?'sample':'ideas'})
+      });
+      const data=await response.json();
+      if(!response.ok)throw Error(data.error || '回答を取得できませんでした。');
+      if(!Array.isArray(data.blocks) || !data.blocks.length || !data.blocks.every(value=>typeof value==='string'))throw Error('回答の形式が正しくありません。');
+      blocks=data.blocks;
+    } else {
+      blocks=demo(question,isSample);
+    }
+    ep.messages.push({role:'user',blocks:[question]},{role:'assistant',blocks,kind:isSample?'sample':'ideas',demo:!connected});
+    if(ep.draftQuestion.trim()===question)ep.draftQuestion='';
+    save(item);
+    if(view==='editorView' && chapter()===ep) {
+      $('question').value=ep.draftQuestion;
+      renderHistory();
+      $('progress').textContent='';
+    }
+  } catch(error) {
+    if(view==='editorView' && chapter()===ep)$('progress').textContent=error.name==='TimeoutError'?'時間がかかっています。しばらくしてからお試しください。':error.message;
+    else $('storage').textContent='相談の回答を取得できませんでした。元のエピソードから再試行できます。';
+  } finally {
+    busy=false;$('send').disabled=false;
+  }
+};
+$('exportData').onclick=()=>{
+  const url=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}));
+  const link=el('a');
+  link.href=url;link.download='小説の作業机-'+new Date().toISOString().slice(0,10)+'.json';
+  link.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+};
+$('importData').onchange=async event=>{
+  const file=event.target.files[0];
+  if(!file)return;
+  try {
+    if(file.size>20_000_000)throw Error('20MB以下のバックアップを選んでください。');
+    const data=JSON.parse(await file.text());
+    const incoming=data.version===2 && Array.isArray(data.works)?data.works:[data];
+    const copies=incoming.map(normalizeWork).map(item=>({...item,id:uid(),title:item.title+'（読み込み）',updatedAt:Date.now()}));
+    state.works.push(...copies);
+    if(save())$('storage').textContent=copies.length+'作品を追加しました';
+    openDashboard();
+  } catch(error) {
+    $('storage').textContent=error instanceof SyntaxError?'バックアップのJSONファイルを選んでください。':error.message;
+  } finally {event.target.value='';}
+};
+openDashboard();
+$('storage').textContent=loadError || 'このブラウザに保存';
+if(!storageBlocked)save();
+if(location.origin==='http://127.0.0.1:4181') {
+  fetch('/status').then(response=>response.json()).then(data=>{
+    connected=data.connected===true;
+    if(connected) {
+      $('mode').textContent='Gemini 接続中';
+      $('hint').textContent='この話と作品ノートをもとに相談できます。送信内容は相談ごとに確認します。';
+    }
+  }).catch(()=>{});
+}
+function demo(question, isSample) {
+  if (isSample) {
+    if (question.includes('雨の夜')) {
+      return ['蓮は窓の向こうを見た。「あの夜も、こんな雨だった」\n「駅を出たあと、どこへ行ったの」\n「どうして駅のことを知ってる？」\n澪は、答えの代わりに窓を閉めた。\n「澪。君はあの手紙を読んだのか」\n「……続きは、明日話す」'];
+    }
+    return ['「青い染み、君のインクだろ」\n「いつ気づいたの？」\n「さっき。引き出しを押さえたとき」\n澪はゆっくり手を離した。「隠したのは、読ませたくなかったから」\n「何を？」\n「あなたが、あの夜に置いてきたこと」'];
+  }
+  return [
+    '案1　青いインクをきっかけに打ち明ける\n蓮が青い染みと澪のインクを結びつけて問い直す。澪は手紙を隠した理由だけ明かす。\n拾える描写：封筒の青い染み。小さな手がかりが告白につながる。',
+    '案2　雨の夜に話をずらし、秘密を次の話へ残す\n澪が駅を出た夜のことを口にしてしまう。蓮は「なぜ知っている？」と問い返す。\n拾える描写：雨音と、澪が語っていない駅の夜。別の疑問を残して話を終えられる。'
+  ];
+}
+
+
+
+</script>
+</body>
+</html>
+

@@ -219,6 +219,7 @@ function workDialog(editId=null) {
   if (!$('workGenre').value) $('workGenre').value='未設定';
   $('workStatus').value=item?.status || 'writing';
   $('submitWork').textContent=item?'変更を保存':'小説を作成';
+  $('workDialogTitle').textContent=item?'作品情報を編集':'新しい小説';
   $('workDialog').showModal();
   $('workTitle').focus();
 }
@@ -263,6 +264,7 @@ $('closePreview').onclick=()=> $('previewDialog').close();
 $('toggleAssistant').onclick=()=>{
   $('assistantPanel').hidden=!$('assistantPanel').hidden;
   $('toggleAssistant').setAttribute('aria-expanded',String(!$('assistantPanel').hidden));
+  $('toggleAssistant').textContent=$('assistantPanel').hidden?'AI相談を開く':'AI相談を閉じる';
 };
 function renderHistory() {
   const log=$('history');
